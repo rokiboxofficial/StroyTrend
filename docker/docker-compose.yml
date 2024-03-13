@@ -29,6 +29,8 @@ services:
         condition: service_healthy
     networks:
       - app
+    ports:
+      - 5432:5432
   
   aspnet-webapp:
     container_name: aspnet-webapp_container

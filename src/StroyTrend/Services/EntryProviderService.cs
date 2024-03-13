@@ -7,7 +7,7 @@ namespace StroyTrend.Services;
 public class EntryProviderService
 {
     private readonly ApplicationContext _applicationContext;
-    private readonly Dictionary<DistributionKind, (Func<Entry, object> groupKeySelector, Func<IGrouping<object, Entry>, string> groupKeyToName)> _distributionFunctionsByKind = new()
+    private readonly Dictionary<DistributionKind, (Func<Entry, object> groupKeySelector, Func<IGrouping<object, Entry>, string> groupingToName)> _distributionFunctionsByKind = new()
     {
         [DistributionKind.Day] = ((Entry entry) => entry.Date, (grouping) => $"{grouping.Key} (UTC)"),
         [DistributionKind.Minute] = ((Entry entry) => entry.Date.Minute, (grouping) => $"{grouping.Key} minutes"),
@@ -20,7 +20,7 @@ public class EntryProviderService
 
     public async Task<EntryResult> GetEntriesAsync(int projectId, EntryRequest request)
     {
-        var totalCount = 0L;
+        double totalCount = 0;
 
         var distribtuion = _distributionFunctionsByKind[(DistributionKind) request.DistributionId];
         var groupKeySelector = distribtuion.groupKeySelector!;
@@ -31,9 +31,27 @@ public class EntryProviderService
             .Where(entry => entry.Date <= request.To)
             .ToListAsync();
 
-        var entries = rawEntries
-            .GroupBy(distribtuion.groupKeySelector)
-            .ToDictionary(distribtuion.groupKeyToName, grouping => grouping.ToDictionary(entry => entry.Key,  entry => { totalCount += entry.Value; return entry.Value; }));
+        var groups = rawEntries
+            .GroupBy(distribtuion.groupKeySelector);
+
+        var entries = new Dictionary<string, Dictionary<string, double>>();
+        foreach(var group in groups)
+        {
+            var valueByKey = new Dictionary<string, double>();
+            foreach(var entry in group)
+            {
+                totalCount += entry.Value;
+                var key = entry.Key;
+
+                if (!valueByKey.ContainsKey(key))
+                    valueByKey[key] = 0;
+
+                valueByKey[key] += entry.Value;
+            }
+
+            var name = distribtuion.groupingToName(group);
+            entries[name] = valueByKey;
+        }
 
         return new EntryResult(totalCount, entries);
     }

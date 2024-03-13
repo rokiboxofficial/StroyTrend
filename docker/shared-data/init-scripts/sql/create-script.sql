@@ -30,3 +30,12 @@ VALUES ('20240311191347_InitialCreate', '8.0.2');
 
 COMMIT;
 
+START TRANSACTION;
+
+ALTER TABLE "Entries" ALTER COLUMN "Value" TYPE double precision;
+
+INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
+VALUES ('20240313075937_ChanedEntryValueTypeToDouble', '8.0.2');
+
+COMMIT;
+

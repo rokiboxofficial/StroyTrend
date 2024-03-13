@@ -2,12 +2,12 @@
 
 public class EntryResult
 {
-    public EntryResult(long total, Dictionary<string, Dictionary<string, int>> records)
+    public EntryResult(double total, Dictionary<string, Dictionary<string, double>> records)
     {
         Total = total;
         Records = records;
     }
 
-    public long Total { get; }
-    public Dictionary<string, Dictionary<string, int>> Records { get; }
+    public double Total { get; }
+    public Dictionary<string, Dictionary<string, double>> Records { get; }
 }

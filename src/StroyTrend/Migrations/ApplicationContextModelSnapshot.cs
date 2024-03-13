@@ -40,8 +40,8 @@ namespace StroyTrend.Migrations
                     b.Property<int>("ProjectId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("Value")
-                        .HasColumnType("integer");
+                    b.Property<double>("Value")
+                        .HasColumnType("double precision");
 
                     b.HasKey("Id");
 
