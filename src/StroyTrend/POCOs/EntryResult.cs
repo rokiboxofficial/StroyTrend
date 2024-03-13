@@ -8,6 +8,6 @@ public class EntryResult
         Records = records;
     }
 
-    public long Total { get; set; }
-    public Dictionary<string, Dictionary<string, int>> Records { get; set; }
+    public long Total { get; }
+    public Dictionary<string, Dictionary<string, int>> Records { get; }
 }

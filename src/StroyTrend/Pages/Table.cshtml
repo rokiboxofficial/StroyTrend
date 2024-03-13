@@ -3,6 +3,8 @@
 @model StroyTrend.Pages.TableModel
 
 @{
+    ViewData["Title"] = "Table";
+
     var tabs = new List<(string name, string fullPath)>()
     {
         ("Index", string.Empty),
@@ -54,7 +56,7 @@
     }
 
     async function initializeDistribution() {
-        const response = await fetch('https://localhost:7234/entries/distributions', {
+        const response = await fetch('/entries/distributions', {
             method: "GET",
         });
         const distributions = await response.json();
@@ -92,7 +94,7 @@
     async function getEntryResult() {
         const requestData = getRequestData();
 
-        const response = await fetch('https://localhost:7234/entries?projectId=@Model.ProjectId', {
+        const response = await fetch('/entries?projectId=@Model.ProjectId', {
             method: "POST",
             body: JSON.stringify(requestData),
             headers: {

@@ -1,0 +1,59 @@
+services:
+  migration-script-builder:
+    container_name: migration-script-builder_container
+    build:
+      context: ./../
+      dockerfile: ./docker/MigrationScriptBuilder/Dockerfile
+    volumes:
+      - ./shared-data/init-scripts/sql:/StroyTrend/migration-generated-scripts
+    healthcheck:
+      test: ["CMD", "test", "-e", "/StroyTrend/migration-generated-scripts/create-script.sql"]
+      interval: 10s
+      timeout: 10s
+      retries: 18
+
+  postgres:
+    container_name: postgres_container
+    image: postgres
+    environment:
+      POSTGRES_DB: "stroytrenddb"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "1"
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+    volumes:
+      - ./shared-data/psql-data/:/var/lib/postgresql/data
+      - ./shared-data/init-scripts/entrypoint:/docker-entrypoint-initdb.d
+      - ./shared-data/init-scripts/sql:/StroyTrend/sql-scripts
+    depends_on:
+      migration-script-builder:
+        condition: service_healthy
+    networks:
+      - app
+  
+  aspnet-webapp:
+    container_name: aspnet-webapp_container
+    build:
+      context: ./../
+      dockerfile: ./docker/AspNetApp/Dockerfile
+    depends_on:
+      postgres:
+        condition: service_started
+    networks:
+      - app
+
+  nginx:
+    container_name: nginx_container
+    image: nginx
+    depends_on:
+      aspnet-webapp:
+        condition: service_started
+    ports:
+      - 80:80
+    volumes:
+      - ./nginx:/etc/nginx/
+    networks:
+      - app
+
+networks:
+  app:
+    driver: bridge

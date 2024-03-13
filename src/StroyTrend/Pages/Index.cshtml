@@ -20,7 +20,7 @@
 
 <script>
     onDocumentInitialized(async () => {
-        const response = await fetch('https://localhost:7234/projects', {
+        const response = await fetch('/projects', {
             method: "GET"
         });
         const projects = await response.json();

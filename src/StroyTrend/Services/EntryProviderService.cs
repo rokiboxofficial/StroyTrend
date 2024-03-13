@@ -25,7 +25,10 @@ public class EntryProviderService
         var distribtuion = _distributionFunctionsByKind[(DistributionKind) request.DistributionId];
         var groupKeySelector = distribtuion.groupKeySelector!;
 
-        var rawEntries = await _applicationContext.Entries.Where(entry => entry.ProjectId == projectId).Where(entry => entry.Date >= request.From).Where(entry => entry.Date <= request.To)
+        var rawEntries = await _applicationContext.Entries
+            .Where(entry => entry.ProjectId == projectId)
+            .Where(entry => entry.Date >= request.From)
+            .Where(entry => entry.Date <= request.To)
             .ToListAsync();
 
         var entries = rawEntries
