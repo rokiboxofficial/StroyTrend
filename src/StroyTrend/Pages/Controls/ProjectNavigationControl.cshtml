@@ -1,0 +1,8 @@
+﻿@model ProjectNavigationControlModel
+
+<ul>
+    @foreach (var tab in Model.Tabs)
+    {
+        <li><a href="/@(tab.fullPath)">@(tab.name)</a></li>
+    }
+</ul>

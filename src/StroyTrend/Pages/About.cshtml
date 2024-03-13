@@ -1,0 +1,28 @@
+﻿@page "{projectId::int}"
+@using StroyTrend.Pages.Controls
+@model StroyTrend.Pages.AboutModel
+
+@{
+    var tabs = new List<(string name, string fullPath)>()
+    {
+        ("Index", string.Empty),
+        ("Table", $"Table/{Model.ProjectId}"),
+        ("About", $"About/{Model.ProjectId}"),
+    };
+}
+
+<partial name="@ProjectNavigationControlModel.ViewPath" model="new ProjectNavigationControlModel(tabs)" />
+
+<h1>About page</h1>
+<div class="about"></div>
+
+<script>
+    onDocumentInitialized(async () => {
+        const response = await fetch(`https://localhost:7234/projects/${@Model.ProjectId}`, {
+            method: "GET"
+        });
+        const project = await response.json();
+
+        $('.about').text(project.about);
+    });
+</script>
